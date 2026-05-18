@@ -1,5 +1,6 @@
 from pathlib import Path
 from config import ALLOWED_EXTENSIONS, IGNORED_DIRS
+from langchain_core.documents import Document
 import os
 def read_directory(directory: Path):
     """
@@ -25,3 +26,15 @@ def read_directory(directory: Path):
             except:
                 pass
     return documents
+
+def to_langchain_docs(documents):
+    res = []
+    for d in documents:
+        res.append(
+            Document(
+                page_content = d["content"],
+                metadatas = {"path": d["path"]}
+            )
+        )
+
+    return res
