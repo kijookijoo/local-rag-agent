@@ -43,8 +43,7 @@ class VectorStore:
             self.db.add_documents(docs)
             self.db.persist()
     
-    def search(self, query, k=5):
-        retriever = self.db.as_retriever(search_kwargs={"k":k})
-        return retriever.invoke(query)
+    def as_retriever(self, k=5):
+        return self.db.as_retriever(search_kwargs={"k":k})
         
             
