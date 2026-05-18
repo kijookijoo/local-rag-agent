@@ -6,7 +6,7 @@ class RAGAgent:
     
     def ask(self, query):
         retrival = self.vectorstore.search(query)
-        context = "".join([doc for doc in retrival])
+        context = "".join([doc.page_content for doc in retrival])
 
         prompt = f"""
         You are a RAG agent. Answer prioritizing the context below.
