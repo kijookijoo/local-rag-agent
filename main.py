@@ -6,6 +6,7 @@ from rag import RAGAgent
 from pathlib import Path
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
+import chains
 import os
 import getpass
 

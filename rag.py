@@ -1,4 +1,3 @@
-
 class RAGAgent:
     def __init__(self, vectorstore, llm):
         self.vectorstore = vectorstore 
