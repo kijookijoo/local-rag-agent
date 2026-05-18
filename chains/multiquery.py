@@ -1,5 +1,4 @@
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
 class MultiQueryGenerator:
@@ -11,7 +10,7 @@ class MultiQueryGenerator:
             Generate 4 alternative search queries related to:
 
             {question}
-
+    
             Return only the queries, one per line.
             """ 
         )

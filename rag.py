@@ -1,11 +1,12 @@
 class RAGAgent:
-    def __init__(self, vectorstore, llm):
-        self.vectorstore = vectorstore 
+    def __init__(self, strategy, llm):
+        self.strategy = strategy
         self.llm = llm
     
     def ask(self, query):
-        retrival = self.vectorstore.search(query)
-        context = "".join([doc.page_content for doc in retrival])
+        docs = self.strategy.retrieve(query)
+        
+        context = "\n".join([d.page_content for d in docs])
 
         prompt = f"""
         You are a RAG agent. Answer prioritizing the context below.
@@ -15,5 +16,5 @@ class RAGAgent:
         Question={query}
         """
         
-        return self.llm.invoke(prompt)
+        return self.llm.invoke(prompt).content
         
