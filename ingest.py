@@ -33,7 +33,7 @@ def to_langchain_docs(documents):
         res.append(
             Document(
                 page_content = d["content"],
-                metadatas = {"path": d["path"]}
+                metadata = {"path": d["path"]}
             )
         )
 
