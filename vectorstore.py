@@ -1,6 +1,6 @@
 from embeddings import load_embedding_model
 from collections import defaultdict
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 import hashlib
 
 class VectorStore:
@@ -41,9 +41,8 @@ class VectorStore:
                 d.metadata["hash"] = newHash
             
             self.db.add_documents(docs)
-            self.db.persist()
     
-    def as_retriever(self, k=5):
+    def as_retriever(self, k=20):
         return self.db.as_retriever(search_kwargs={"k":k})
         
             

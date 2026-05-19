@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="rag",
+    name="atlas",
     version="0.1",
     packages=find_packages(),
     py_modules=[
@@ -21,7 +21,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "rag=cli:app",
+            "atlas=cli:app",
         ]
     },
 )

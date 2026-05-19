@@ -1,4 +1,4 @@
-# Local RAG Agent
+# Atlas
 
 A lightweight local Retrieval-Augmented Generation (RAG) system that indexes a directory of files, stores embeddings in a vector database, and enables semantic search and question answering over local codebases or document collections.
 
@@ -132,7 +132,7 @@ setx OPENAI_API_KEY "your-api-key"
 
 Run the application
 
-python main.py
+atlas
 
 
 Example Usage
