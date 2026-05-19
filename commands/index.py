@@ -7,9 +7,11 @@ from atlas_banner import print_atlas_banner
 from rich.console import Console
 import os
 
-def index_run():
+
+def index_run(show_banner: bool = True):
     console = Console()
-    print_atlas_banner(console)
+    if show_banner:
+        print_atlas_banner(console)
     cwd = Path(os.getcwd())
     docs = read_directory(cwd)
     langchain_docs = to_langchain_docs(docs)

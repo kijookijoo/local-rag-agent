@@ -15,12 +15,14 @@ import os
    
 load_dotenv()
 
-def chat_run():
+
+def chat_run(show_banner: bool = True):
     console = Console()
     if not os.getenv("OPENAI_API_KEY"):
         os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter your OpenAI API key: ")
 
-    print_atlas_banner(console)
+    if show_banner:
+        print_atlas_banner(console)
     console.print(
         Text("Type your question. Use ", style="dim")
         + Text("exit", style="bold")
@@ -35,7 +37,7 @@ def chat_run():
     )
     
     vectorstore = VectorStore()
-    retriever = vectorstore.as_retriever(k=4)
+    retriever = vectorstore.as_retriever(k=20)
     strategy = RAGFusionStrategy(llm, retriever)
     
     # ChatOpenAI automatically picks up OPENAI_API_KEY from .env    

@@ -11,17 +11,24 @@ console = Console()
 
 @app.callback(invoke_without_command=True)
 def main(ctx: typer.Context):
-    print_atlas_banner(console)
     if ctx.invoked_subcommand is None:
-        console.print("[dim]Use [bold]rag chat[/bold] or [bold]rag index[/bold].[/dim]")
+        print_atlas_banner(console)
+        console.print("[dim]Use [bold]atlas chat[/bold] or [bold]atlas index[/bold].[/dim]")
 
 @app.command()
 def index():
-    index_run()
+    index_run(show_banner=True)
 
 @app.command()
 def chat():
-    chat_run()
+    chat_run(show_banner=True)
+
+
+@app.command()
+def dev():
+    print_atlas_banner(console)
+    index_run(show_banner=False)
+    chat_run(show_banner=False)
 
 if __name__ == "__main__":
     app()

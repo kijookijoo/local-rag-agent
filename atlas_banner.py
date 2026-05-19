@@ -1,39 +1,62 @@
+from rich import box
+from rich.align import Align
+from rich.console import Console
 from rich.panel import Panel
-from rich.padding import Padding
+from rich.table import Table
 from rich.text import Text
 
-def print_atlas_banner(console) -> None:
-    art = Text.from_markup(
-                    r"""
-            [bold cyan]                      ,----,   ,--,                             [/bold cyan]
-            [bold blue]                    ,/   .`|,---.'|                             [/bold blue]
-            [bold bright_cyan]   ,---,          ,`   .'  :|   | :      ,---,       .--.--.    [/bold bright_cyan]
-            [bold magenta]  '  .' \       ;    ;     /:   : |     '  .' \     /  /    '.  [/bold magenta]
-            [bold purple] /  ;    '.   .'___,/    ,' |   ' :    /  ;    '.  |  :  /`. /  [/bold purple]
-            [bold cyan]:  :       \  |    :     |  ;   ; '   :  :       \ ;  |  |--`   [/bold cyan]
-            [bold blue]:  |   /\   \ ;    |.';  ;  '   | |__ :  |   /\   \|  :  ;_     [/bold blue]
-            [bold bright_cyan]|  :  ' ;.   :`----'  |  |  |   | :.'||  :  ' ;.   :\  \    `.  [/bold bright_cyan]
-            [bold magenta]|  |  ;/  \   \   '   :  ;  '   :    ;|  |  ;/  \   \`----.   \ [/bold magenta]
-            [bold purple]'  :  | \  \ ,'   |   |  '  |   |  ./ '  :  | \  \ ,'__ \  \  | [/bold purple]
-            [bold cyan]|  |  '  '--'     '   :  |  ;   : ;   |  |  '  '--' /  /`--'  / [/bold cyan]
-            [bold blue]|  :  :           ;   |.'   |   ,/    |  :  :      '--'.     /  [/bold blue]
-            [bold bright_cyan]|  | ,'           '---'     '---'     |  | ,'        `--'---'   [/bold bright_cyan]
-            [bold magenta]`--''                                 `--''                     [/bold magenta]
 
-            [bold cyan]                         Semantic Code Navigation[/bold cyan]
-            """
+def print_atlas_banner(console: Console):
+    dock = r"""
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣤⣄⠀⠀⠀⠀⠀⠀⠐⠛⠛⠂⠀⠀⠀⠀⠀⠀⣠⣤⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠙⢿⣷⡶⠀⣀⣴⣶⣾⣟⣻⣷⣶⣦⣀⠀⢶⣾⡿⠋⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠘⠋⣠⢞⣿⠿⠛⠉⣉⣉⠉⛛⠿⣿⡳⣄⠙⠃⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⣼⣿⡟⠁⣤⡀⠀⢹⡏⠀⢀⣤⠈⢻⣿⣧⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⠀⣸⣿⡟⠀⠀⠈⠻⠂⢈⡁⠐⠟⠁⠀⠀⢻⣿⣇⠀⡀⠀⠀⠀⠀
+⠀⢾⣿⣿⣿⠀⣿⣹⡇⢸⡷⠶⠆⠰⣿⣿⠆⠰⠶⢾⡇⢸⣏⣿⠀⣿⣿⣿⡷⠀
+⠀⠀⠀⠀⠈⠀⢹⣿⣧⠀⠀⢀⣴⠄⢈⡁⠠⣦⡀⠀⠀⣼⣿⡏⠀⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⢻⣿⣧⡀⠛⠁⠀⣸⣇⠀⠈⠛⢀⣼⣿⡟⠁⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢠⣄⠙⢮⣿⣶⣤⣀⣉⣉⣀⣤⣶⣿⡵⠋⣠⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣠⣾⡿⠷⠀⠉⠻⠿⢿⣯⣽⡿⠿⠟⠉⠀⠾⢿⣷⣄⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠛⠋⠀⠀⠀⠀⠀⠀⠠⣤⣤⠄⠀⠀⠀⠀⠀⠀⠙⠛⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+"""
+
+    atlas = r"""
+                      ,----,   ,--,
+                    ,/   .`|,---.'|
+   ,---,          ,`   .'  :|   | :      ,---,       .--.--.
+  '  .' \       ;    ;     /:   : |     '  .' \     /  /    '.
+ /  ;    '.   .'___,/    ,' |   ' :    /  ;    '.  |  :  /`. /
+:  :       \  |    :     |  ;   ; '   :  :       \ ;  |  |--`
+:  |   /\   \ ;    |.';  ;  '   | |__ :  |   /\   \|  :  ;_
+|  :  ' ;.   :`----'  |  |  |   | :.'||  :  ' ;.   :\  \    `.
+|  |  ;/  \   \   '   :  ;  '   :    ;|  |  ;/  \   \`----.   \
+'  :  | \  \ ,'   |   |  '  |   |  ./ '  :  | \  \ ,'__ \  \  |
+|  |  '  '--'     '   :  |  ;   : ;   |  |  '  '--' /  /`--'  /
+|  :  :           ;   |.'   |   ,/    |  :  :      '--'.     /
+|  | ,'           '---'     '---'     |  | ,'        `--'---'
+`--''                                 `--''
+"""
+
+    body = Table.grid(padding=(0, 2))
+    body.add_column(justify="left", no_wrap=True)
+    body.add_column(justify="left")
+    body.add_row(
+        Text.from_markup(f"[bold cyan]{dock}[/bold cyan]"),
+        Text.from_markup(f"[bold blue]{atlas}[/bold blue]"),
     )
 
     console.print(
         Panel(
-            Padding(art, (0, 2)),
-            border_style="cyan",
-            padding=(0, 1),
+            Align.center(body),
             title="[bold cyan]ATLAS[/bold cyan]",
-            subtitle="[dim]Semantic Code Navigation[/dim]",
+            subtitle="[dim]Fast local retrieval for code and knowledge.[/dim]",
+            subtitle_align="center",
+            border_style="cyan",
+            box=box.SQUARE,
         )
-    )
-    
-    console.print(
-        Text("Aesthetic retrieval CLI for fast local exploration", style="dim")
     )
