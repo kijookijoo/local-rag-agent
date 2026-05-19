@@ -1,4 +1,5 @@
 README.md
+atlas_banner.py
 chunker.py
 cli.py
 config.py
