@@ -3,9 +3,13 @@ from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from strategies.rag_fusion import RAGFusionStrategy
 from vectorstore import VectorStore
+from atlas_banner import print_atlas_banner
 from rich.console import Console
+from rich.panel import Panel
 from rich.prompt import Prompt
+from rich.rule import Rule
 from rich.text import Text
+from rich.table import Table
 import getpass
 import os
    
@@ -14,10 +18,19 @@ load_dotenv()
 def chat_run():
     console = Console()
     if not os.getenv("OPENAI_API_KEY"):
-        os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter your OpenAI API key: ") 
+        os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter your OpenAI API key: ")
+
+    print_atlas_banner(console)
+    console.print(
+        Text("Type your question. Use ", style="dim")
+        + Text("exit", style="bold")
+        + Text(" or ", style="dim")
+        + Text("quit", style="bold")
+        + Text(" to leave.\n", style="dim")
+    )
     
     llm = ChatOpenAI(
-        model_name= os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini"), 
+        model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini"),
         temperature=0
     )
     
@@ -29,25 +42,48 @@ def chat_run():
     agent = RAGAgent(strategy, llm)
     
     while True:
-        query = input("\nYou: ")
-        if (query.lower() in {"exit", "quit"}):
+        query = Prompt.ask("[bold cyan]You[/bold cyan]")
+        if query.lower() in {"exit", "quit"}:
             break
-        
-        retrievals = retriever.invoke(query)
+
+        with console.status("[bold cyan]Searching context[/bold cyan]", spinner="dots"):
+            retrievals = retriever.invoke(query)
+            response = agent.ask(query)
+
+        console.print(
+            Panel(
+                Text(query, style="bold"),
+                title="[bold cyan]You[/bold cyan]",
+                border_style="cyan",
+                padding=(0, 1),
+            )
+        )
+
         if retrievals:
-            console.print("Retrieved Documents:")
-            console.print("\n")
-            
-        for doc in retrievals:
-            console.print(doc.page_content)
-            console.print("\n")
-            console.print("-" * 20)
-            
-        response = agent.ask(query)
-        console.print("-" * 20)
-        console.print(response)
-        
-    
-    
-    
-    
+            source_table = Table.grid(expand=True)
+            source_table.add_column(ratio=1)
+            source_table.add_row(Text("Retrieved context", style="bold magenta"))
+            console.print(source_table)
+
+            for idx, doc in enumerate(retrievals, start=1):
+                excerpt = doc.page_content.strip()
+                if len(excerpt) > 500:
+                    excerpt = excerpt[:497].rstrip() + "..."
+                console.print(
+                    Panel(
+                        excerpt,
+                        title=f"[bold magenta]Source {idx}[/bold magenta]",
+                        border_style="magenta",
+                        padding=(0, 1),
+                    )
+                )
+
+        console.print(
+            Panel(
+                response.strip(),
+                title="[bold green]Assistant[/bold green]",
+                border_style="green",
+                padding=(0, 1),
+            )
+        )
+        console.print(Rule(style="dim"))
