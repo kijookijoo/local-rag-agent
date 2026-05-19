@@ -22,7 +22,6 @@ class RAGFusionStrategy:
             )
             
             for rank, (doc,score) in enumerate(retrieved_docs):
-                print(score)
                 if score > SIMILARITY_DIST_THRESHOLD:
                     continue
                 key = (
