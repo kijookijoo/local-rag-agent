@@ -42,6 +42,7 @@ def chat_run(show_banner: bool = True):
     
     # ChatOpenAI automatically picks up OPENAI_API_KEY from .env    
     agent = RAGAgent(strategy, llm)
+    chat_history = []
     
     while True:
         query = Prompt.ask("[bold cyan]You[/bold cyan]")
@@ -50,7 +51,7 @@ def chat_run(show_banner: bool = True):
 
         with console.status("[bold cyan]Searching context[/bold cyan]", spinner="dots"):
             retrievals = retriever.invoke(query)
-            response = agent.ask(query)
+            response = agent.ask(query, chat_history=chat_history)
 
         console.print(
             Panel(
@@ -89,3 +90,5 @@ def chat_run(show_banner: bool = True):
             )
         )
         console.print(Rule(style="dim"))
+
+        chat_history.append({"user": query, "assistant": response.strip()})
