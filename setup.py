@@ -3,25 +3,15 @@ from setuptools import find_packages, setup
 setup(
     name="atlas",
     version="0.1",
-    packages=find_packages(),
-    py_modules=[
-        "atlas_banner",
-        "cli",
-        "chunker",
-        "config",
-        "embeddings",
-        "ingest",
-        "main",
-        "rag",
-        "vectorstore",
-    ],
+    package_dir={"": "src"},
+    packages=find_packages("src"),
     install_requires=[
         "typer",
         "rich",
     ],
     entry_points={
         "console_scripts": [
-            "atlas=cli:app",
+            "atlas=atlas.cli:app",
         ]
     },
 )
