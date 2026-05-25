@@ -11,6 +11,7 @@ from rich.table import Table
 from rich.text import Text
 
 from ..atlas_banner import print_atlas_banner
+from ..bm25store import BM25Store
 from ..rag import RAGAgent
 from ..strategies.rag_fusion import RAGFusionStrategy
 from ..vectorstore import VectorStore
@@ -39,8 +40,9 @@ def chat_run(show_banner: bool = True):
     )
 
     vectorstore = VectorStore()
-    retriever = vectorstore.as_retriever(k=20)
-    strategy = RAGFusionStrategy(llm, retriever)
+    dense_retriever = vectorstore.as_retriever(k=20)
+    bm25_retriever = BM25Store().as_retriever(k=20)
+    strategy = RAGFusionStrategy(llm, dense_retriever, bm25_retriever)
 
     agent = RAGAgent(strategy, llm)
     chat_history = []
@@ -51,7 +53,7 @@ def chat_run(show_banner: bool = True):
             break
 
         with console.status("[bold cyan]Searching context[/bold cyan]", spinner="dots"):
-            retrievals = retriever.invoke(query)
+            retrievals = strategy.retrieve(query)
             response = agent.ask(query, chat_history=chat_history)
 
         console.print(

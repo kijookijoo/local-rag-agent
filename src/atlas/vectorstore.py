@@ -1,8 +1,8 @@
 from collections import defaultdict
-import hashlib
 
 from langchain_chroma import Chroma
 
+from .index_state import content_hash
 from .embeddings import load_embedding_model
 
 
@@ -14,9 +14,6 @@ class VectorStore:
             embedding_function=self.embedding_model,
         )
 
-    def hash(self, content):
-        return hashlib.sha256(content.encode("utf-8")).hexdigest()
-
     def index_documents(self, chunk_docs):
         by_file = defaultdict(list)
         for doc in chunk_docs:
@@ -24,7 +21,7 @@ class VectorStore:
 
         for path, docs in by_file.items():
             full_text = "".join(d.page_content for d in docs)
-            new_hash = self.hash(full_text)
+            new_hash = content_hash(full_text)
             prev = self.db.get(where={"path": path})
 
             if len(prev["ids"]) > 0:
