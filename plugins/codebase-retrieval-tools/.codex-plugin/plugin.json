@@ -1,0 +1,45 @@
+{
+  "name": "codebase-retrieval-tools",
+  "version": "0.1.0",
+  "description": "Tools for codebase retrieval evaluation and query generation.",
+  "author": {
+    "name": "User",
+    "email": "",
+    "url": ""
+  },
+  "homepage": "",
+  "repository": "",
+  "license": "MIT",
+  "keywords": [
+    "rag",
+    "retrieval",
+    "evaluation"
+  ],
+  "skills": "./skills/",
+  "hooks": "",
+  "mcpServers": "",
+  "apps": "",
+  "interface": {
+    "displayName": "Codebase Retrieval Tools",
+    "shortDescription": "Query-generation and retrieval evaluation helpers for codebases.",
+    "longDescription": "A small Codex plugin for agents that need to generate challenging codebase queries and evaluate whether retrieval reduces repeated search work.",
+    "developerName": "User",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "",
+    "privacyPolicyURL": "",
+    "termsOfServiceURL": "",
+    "defaultPrompt": [
+      "Generate codebase-specific queries that would stress a RAG retrieval pipeline and reduce repeated grep calls.",
+      "Assess whether retrieval context would save tokens compared with manual repo exploration.",
+      "Suggest questions that force cross-file and cross-module reasoning."
+    ],
+    "brandColor": "#3B82F6",
+    "composerIcon": "",
+    "logo": "",
+    "screenshots": []
+  }
+}
