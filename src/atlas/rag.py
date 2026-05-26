@@ -3,8 +3,9 @@ class RAGAgent:
         self.strategy = strategy
         self.llm = llm
 
-    def ask(self, query, chat_history=None):
-        docs = self.strategy.retrieve(query)
+    def ask(self, query, chat_history=None, docs=None):
+        if docs is None:
+            docs = self.strategy.retrieve(query)
         context = "\n".join([d.page_content for d in docs])
 
         history_text = ""

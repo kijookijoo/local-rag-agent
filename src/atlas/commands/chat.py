@@ -54,7 +54,7 @@ def chat_run(show_banner: bool = True):
 
         with console.status("[bold cyan]Searching context[/bold cyan]", spinner="dots"):
             retrievals = strategy.retrieve(query)
-            response = agent.ask(query, chat_history=chat_history)
+            response = agent.ask(query, chat_history=chat_history, docs=retrievals)
 
         console.print(
             Panel(
