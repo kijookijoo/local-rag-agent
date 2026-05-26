@@ -17,7 +17,7 @@ class BM25Store:
             return
 
         try:
-            self.index = bm25s.BM25.load(str(self.index_dir), load_corpus=True, show_progress=False)
+            self.index = bm25s.BM25.load(str(self.index_dir), load_corpus=True)
             self.corpus = self.index.corpus or []
         except FileNotFoundError:
             self.index = bm25s.BM25()
@@ -35,23 +35,21 @@ class BM25Store:
         tokenized_corpus = bm25s.tokenize(
             [item["page_content"] for item in self.corpus],
             return_ids=False,
-            show_progress=False,
         )
         self.index = bm25s.BM25()
-        self.index.index(tokenized_corpus, create_empty_token=True, show_progress=False)
-        self.index.save(str(self.index_dir), corpus=self.corpus, show_progress=False)
+        self.index.index(tokenized_corpus, create_empty_token=True)
+        self.index.save(str(self.index_dir), corpus=self.corpus)
 
     def search(self, query: str, k: int = 20):
         if not self.corpus:
             return []
 
-        tokenized_query = bm25s.tokenize(query, return_ids=False, show_progress=False)
+        tokenized_query = bm25s.tokenize(query, return_ids=False)
         results = self.index.retrieve(
             tokenized_query,
             corpus=self.corpus,
             k=k,
             sorted=True,
-            show_progress=False,
         )
 
         docs = []
