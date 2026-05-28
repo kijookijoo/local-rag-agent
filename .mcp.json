@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rag-agent": {
+      "command": "python",
+      "args": ["-m", "atlas.mcp_server"],
+      "cwd": "C:\\Users\\User\\Desktop\\rag-agent"
+    }
+  }
+}
