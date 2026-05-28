@@ -1,251 +1,143 @@
-# Atlas: RAG Pipeline as MCP Server
+# Atlas: Hybrid RAG with Specialized MCP Tools
 
-A lightweight Retrieval-Augmented Generation (RAG) system that indexes your documents and exposes them as an MCP server for Claude Code. Get 80-90% token savings by injecting only relevant context.
+A lightweight RAG system that indexes documents and exposes three specialized search tools via MCP for Claude. Reduces token overhead while improving retrieval accuracy through intelligent tool selection.
 
-## Pipeline
+## What It Does
 
-- **Indexes documents** — Semantic + keyword search
-- **Runs locally** — Secure, no cloud deployment
-- **Integrates with Claude Code** — Automatic tool discovery
-- **Saves tokens** — 10x reduction in context window usage
+- Hybrid retrieval combining BM25 keyword matching and semantic vector search
+- Three specialized MCP tools: search_keyword (fast), search_semantic (accurate), search_hybrid (balanced)
+- Local execution with zero network calls
+- Automatic tool discovery in Claude Code
+- Benchmark-tested performance metrics
 
-## 🚀 Quick Start (5 minutes)
-
-```bash
-# 1. Install dependencies (including MCP SDK)
-pip install -r requirements.txt
-
-# 2. Install this project
-pip install -e .
-
-# 3. Index your documents (one-time)
-python -m atlas.cli index /path/to/documents
-
-# 4. Start the MCP server
-python -m atlas
-
-# 5. Open Claude Code
-# - Server auto-connects via .claude/settings.json
-# - Ask Claude about your documents!
-```
 ## Architecture
 
 ```
-Your Documents
-    ↓
-Chunked + Embedded
-    ├─ Vector Store (Chroma)
-    └─ BM25 Index (keyword)
-    ↓
-RAGFusionStrategy (combines both)
-    ↓
-FastMCP Server
-    └─ @tool search_rag()
-    ↓
-Claude Code (auto-discovers tool)
-    ↓
-Claude injects context → answers efficiently
+Documents (yours)
+    |
+    +-- Chunked & Indexed
+        |
+        +-- BM25 Store (keyword index)
+        +-- Vector Store (embeddings via all-MiniLM-L6-v2)
+    |
+    +-- HTTP Server (http://127.0.0.1:8000)
+        |
+        +-- /search/keyword (fast, exact match)
+        +-- /search/semantic (slow, meaning-based)
+        +-- /search/hybrid (balanced, RRF fusion)
+    |
+    +-- MCP Server (fastmcp)
+        |
+        +-- search_keyword() tool
+        +-- search_semantic() tool
+        +-- search_hybrid() tool
+    |
+    +-- Claude (auto-discovers tools)
 ```
 
-## 💡 How It Works
+## Quick Start
 
-1. **You index documents** (one-time setup)
-   ```bash
-   python -m atlas.cli index /path/to/docs
-   ```
+```bash
+# Install
+pip install -r requirements.txt && pip install -e .
 
-2. **Server starts** with both semantic and keyword search
-   ```bash
-   python -m atlas
-   ```
+# Index documents
+python -m atlas.cli index /path/to/documents
 
-3. **Claude Code connects** automatically via MCP
-   - Loads `.claude/settings.json`
-   - Starts server as subprocess
-   - Registers `search_rag` tool
+# Start HTTP server (required)
+python http_server.py
 
-4. **You ask questions** in Claude Code
-   ```
-   "What are the main auth methods?"
-   ```
+# Start MCP server (in another terminal)
+python -m atlas.mcp_server
 
-5. **Claude calls your RAG server**
-   - Searches documents
-   - Gets top-5 matches
-   - Injects as context
-   - Generates answer efficiently
-
-## ⚡ Token Efficiency
-
-**Without RAG:**
-- Load full docs: 50,000+ tokens
-- Query: 5,000 tokens
-- Total: 55,000+ tokens
-
-**With RAG (your server):**
-- Injected context: 2,000 tokens
-- Query: 5,000 tokens
-- Total: 7,000 tokens
-
-**Result:** 87% fewer tokens = 10x faster, 10x cheaper
-
-## 🛠️ Core Features
-
-### Retrieval Strategy
-- **Semantic search** — Vector embeddings (all-MiniLM-L6-v2)
-- **Keyword search** — BM25 matching
-- **Fusion** — Combines both for best results
-
-### Local Hosting
-- **Stdio transport** — Runs as Claude Code subprocess
-- **No network** — Completely local
-- **Secure** — Data never leaves your machine
-
-### Smart Indexing
-- **Incremental** — Only re-indexes changed files
-- **Chunked** — 512-char chunks with overlap
-- **Metadata** — Tracks file path, source, type
-
-## 🔧 Customization
-
-### Change Model
-```python
-# src/atlas/mcp_server.py, RAGService.__init__()
-self.llm = ChatOpenAI(model_name="gpt-4")  # Change here
+# Claude will auto-discover the three tools
 ```
 
-### Reduce Search Latency
-```python
-# Smaller top_k = faster
-service.search(query, top_k=3)  # Default is 5
-```
+## Tools
 
-### Use Different Embedding Model
-```python
-# In src/atlas/mcp_server.py
-HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
-```
+| Tool | Speed | Best For | Tokens |
+|------|-------|----------|--------|
+| search_keyword | ~300ms | Code lookups, specific terms | ~345/query |
+| search_semantic | ~1500ms | Conceptual, meaning-based | ~423/query |
+| search_hybrid | ~1000ms | General questions | ~477/query |
 
-## 📊 Performance
+Claude automatically selects the right tool based on your question.
 
-| Metric | Typical |
-|--------|---------|
-| Startup | 1-3s |
-| First search | 3-5s |
-| Subsequent search | 1-2s |
-| Throughput | 3-8 queries/sec |
-| Token savings | 85-95% |
+## Performance
 
-See **[PERFORMANCE_GUIDE.md](PERFORMANCE_GUIDE.md)** to test and optimize.
+| Metric | Value |
+|--------|-------|
+| Token overhead per query | ~320 tokens (for context + tools) |
+| Time overhead | ~250-300ms (HTTP call) |
+| Token savings vs full context | 70-90% |
+| Cost impact | < $0.00001 per query |
 
-## ⚙️ Project Structure
+See BENCHMARK_RESULTS.md for detailed measurements.
+
+## Dependencies
+
+Core:
+- Python 3.9+
+- langchain (embeddings, document processing)
+- sentence-transformers (all-MiniLM-L6-v2 model)
+- bm25s (keyword search)
+- chromadb (vector store)
+
+MCP:
+- anthropic/mcp (FastMCP server)
+- httpx (HTTP client)
+
+Server:
+- fastapi + uvicorn (HTTP backend)
+
+## File Structure
 
 ```
 src/atlas/
-├── mcp_server.py          ← FastMCP server (main)
-├── bm25store.py           ← Keyword search
-├── vectorstore.py         ← Vector embeddings
-├── rag.py                 ← RAG agent
-├── strategies/
-│   └── rag_fusion.py      ← Fusion strategy
-└── commands/
-    └── chat.py            ← CLI chat interface
-    └── index.py           ← Indexing command
+├── mcp_server.py       Three MCP tools
+├── bm25store.py        BM25 keyword search
+├── vectorstore.py      Vector embeddings
+├── embeddings.py       Embedding model loader
+├── chunker.py          Document chunking
+└── cli.py              Index command
 
+http_server.py          HTTP server with 3 endpoints
 .claude/
-└── settings.json          ← Claude Code config (MCP server)
-
-Root:
-├── QUICK_START.md         ← Start here
-├── LOCAL_MCP_SETUP.md     ← Local hosting guide
-├── PERFORMANCE_GUIDE.md   ← Testing & optimization
-└── README.md              ← This file
+└── settings.json       MCP server config
 ```
 
-## 🚀 Usage Scenarios
+## When to Use MCP Tools
 
-### Scenario 1: Single-User Local Development
-You want fast, token-efficient document search in Claude Code.
+Use search_keyword for:
+- Looking up specific code, function names, identifiers
+- Fast retrieval when you know exact terms
 
-**Setup:** 5 minutes  
-**Hosting:** Local (stdio)  
-**Best for:** Solo developers, quick iteration
+Use search_semantic for:
+- Understanding concepts and relationships
+- Paraphrased or natural language questions
 
-→ See [QUICK_START.md](QUICK_START.md)
+Use search_hybrid for:
+- General questions about your documents
+- When you're unsure which method fits
+- Maximum accuracy desired
 
-### Scenario 2: Performance Testing
-You want to benchmark your setup.
+## Limitations
 
-**Test:** 5-10 minutes  
-**Metrics:** Latency, throughput, token savings
+- Requires vector store initialization (downloads embedding model on first run)
+- Offline operation possible with keyword search only
+- Single-user local execution (HTTP server not meant for scale)
+- Context size limited by LLM window (30K tokens for Opus)
 
-→ See [PERFORMANCE_GUIDE.md](PERFORMANCE_GUIDE.md)
+## Resources
 
-### Scenario 3: Optimization
-You want faster/cheaper searches.
+- BENCHMARK_RESULTS.md - Performance analysis with 5 test queries
+- QUICK_START.md - Step-by-step setup guide
+- LOCAL_MCP_SETUP.md - Detailed configuration
+- PERFORMANCE_GUIDE.md - Testing and optimization
 
-**Options:** Reduce top_k, smaller model, smaller chunks
+## References
 
-→ See [PERFORMANCE_GUIDE.md](PERFORMANCE_GUIDE.md#performance-optimization)
-
-## 🔍 Debugging
-
-**Server won't start?**
-- Check: `echo $OPENAI_API_KEY` (key set?)
-- Check: `ls chroma_db/ bm25_db/` (docs indexed?)
-- Try: `pip install -e .` (package installed?)
-
-**Claude Code can't connect?**
-- Verify `.claude/settings.json` exists
-- Restart Claude Code after starting server
-- Check: `python -m atlas` runs without errors
-
-**Search is slow?**
-- First search is expected: 3-5s (models load)
-- Subsequent: 1-2s (normal)
-- Reduce `top_k` to 3 for speed
-
-**No results found?**
-- Run: `python -m atlas.cli index /path/to/docs`
-- Check: `ls -la chroma_db/` (has files?)
-- Try: More specific query
-
-See [LOCAL_MCP_SETUP.md](LOCAL_MCP_SETUP.md#troubleshooting) for more.
-
-## 📈 Next Steps
-
-1. **Get started** → [QUICK_START.md](QUICK_START.md)
-2. **Test performance** → [PERFORMANCE_GUIDE.md](PERFORMANCE_GUIDE.md)
-3. **Detailed setup** → [LOCAL_MCP_SETUP.md](LOCAL_MCP_SETUP.md)
-
-## Technicals
-
-### Retrieval Strategy
-The `RAGFusionStrategy` combines:
-1. **Dense retrieval** (semantic) using vector embeddings
-2. **Sparse retrieval** (keyword) using BM25
-3. **Fusion** by ranking and combining results
-
-This hybrid approach retrieves more relevant documents than either alone.
-
-### MCP Server
-Built with `FastMCP` — Anthropic's official decorator-based MCP library.
-
-```python
-@mcp.tool()
-def search_rag(query: str, top_k: int = 5) -> str:
-    """Search documents and return context"""
-    service = get_rag_service()
-    results = service.search(query, top_k)
-    return service.format_results(results)
-```
-
-### Transport
-Uses **stdio** transport:
-- Server runs as subprocess of Claude Code
-- No network calls
-- Secure, low-latency
-- Perfect for single-user local setup
+- FastMCP: https://github.com/anthropics/mcp-sdk-python
+- BM25: Okapi probabilistic retrieval model
+- Sentence-Transformers: https://huggingface.co/sentence-transformers
 
