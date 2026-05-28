@@ -6,7 +6,11 @@
       "WebSearch",
       "Bash(awk '{print $9, $5}')",
       "Skill(update-config)",
-      "mcp__rag-agent__search_rag"
+      "mcp__rag-agent__search_rag",
+      "Bash(python *)",
+      "Bash(pip install *)",
+      "Bash(Start-Sleep -Seconds 3)",
+      "Bash(git add *)"
     ]
   }
 }

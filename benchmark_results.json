@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-05-28 22:03:32",
+  "model": "claude-opus-4-7",
+  "queries": [
+    {
+      "name": "Code Architecture Question",
+      "without_mcp": {
+        "input_tokens": 201,
+        "output_tokens": 175,
+        "total_tokens": 376,
+        "time_seconds": 0.3001756999947247,
+        "content": "This is a simulated response showing typical token usage patterns. In production, this would be Claude's actual response to your question."
+      },
+      "with_mcp": {
+        "input_tokens": 331,
+        "output_tokens": 272,
+        "total_tokens": 603,
+        "time_seconds": 0.5002097000033245,
+        "content": "Response with MCP context. This simulates what Claude would output after retrieving relevant documents from the RAG system."
+      }
+    },
+    {
+      "name": "Performance Optimization",
+      "without_mcp": {
+        "input_tokens": 183,
+        "output_tokens": 158,
+        "total_tokens": 341,
+        "time_seconds": 0.3005081999945105,
+        "content": "This is a simulated response showing typical token usage patterns. In production, this would be Claude's actual response to your question."
+      },
+      "with_mcp": {
+        "input_tokens": 296,
+        "output_tokens": 326,
+        "total_tokens": 622,
+        "time_seconds": 0.5004071000003023,
+        "content": "Response with MCP context. This simulates what Claude would output after retrieving relevant documents from the RAG system."
+      }
+    },
+    {
+      "name": "Integration Pattern",
+      "without_mcp": {
+        "input_tokens": 178,
+        "output_tokens": 214,
+        "total_tokens": 392,
+        "time_seconds": 0.30023829999845475,
+        "content": "This is a simulated response showing typical token usage patterns. In production, this would be Claude's actual response to your question."
+      },
+      "with_mcp": {
+        "input_tokens": 310,
+        "output_tokens": 303,
+        "total_tokens": 613,
+        "time_seconds": 0.5001733999961289,
+        "content": "Response with MCP context. This simulates what Claude would output after retrieving relevant documents from the RAG system."
+      }
+    }
+  ],
+  "summary": {
+    "total_tokens_without": 1109,
+    "total_tokens_with": 1838,
+    "token_increase_pct": 65.73489630297566,
+    "total_time_without": 0.90092219998769,
+    "total_time_with": 1.5007901999997557,
+    "time_increase_pct": 66.58377382866824,
+    "cost_without": 3.327e-06,
+    "cost_with": 5.514e-06,
+    "cost_delta": 2.187e-06
+  }
+}
