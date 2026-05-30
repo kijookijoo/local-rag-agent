@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(atlas:*)",
+      "Bash(greppy:*)"
+    ],
+    "deny": [
+      "Glob",
+      "Grep",
+      "Read"
+    ]
+  }
+}

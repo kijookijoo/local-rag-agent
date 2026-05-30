@@ -5,6 +5,7 @@ from .atlas_banner import print_atlas_banner
 from .commands.chat import chat_run
 from .commands.index import index_run
 from .greppy import Greppy
+from .mode_manager import ModeManager
 
 app = typer.Typer()
 console = Console()
@@ -32,6 +33,43 @@ def dev():
     print_atlas_banner(console)
     index_run(show_banner=False)
     chat_run(show_banner=False)
+
+
+# Mode management commands
+mode_app = typer.Typer()
+mm = ModeManager()
+
+
+@mode_app.command()
+def status():
+    """Show current mode and configuration."""
+    mm.status()
+
+
+@mode_app.command()
+def mcp():
+    """Switch to MCP mode (three specialized tools for Claude)."""
+    if mm.switch_to_mcp():
+        console.print()
+        console.print("[bold cyan]MCP Mode Setup:[/bold cyan]")
+        console.print("1. Start the HTTP server: [bold]python http_server.py[/bold]")
+        console.print("2. In another terminal, start MCP: [bold]python -m atlas.mcp_server[/bold]")
+        console.print("3. Restart Claude Code")
+        console.print("4. Claude will auto-discover the three tools")
+
+
+@mode_app.command()
+def greppy():
+    """Switch to Greppy mode (CLI tool with restricted native tools)."""
+    if mm.switch_to_greppy():
+        console.print()
+        console.print("[bold cyan]Greppy Mode Setup:[/bold cyan]")
+        console.print("1. Restart Claude Code")
+        console.print("2. Use 'atlas greppy' for all code operations:")
+        console.print("   - atlas greppy search 'query'")
+        console.print("   - atlas greppy exact 'pattern'")
+        console.print("   - atlas greppy read file.py:45")
+        console.print("3. Native tools (Glob, Grep, Read) are blocked")
 
 
 # Greppy commands
@@ -115,6 +153,7 @@ def clear():
 
 
 app.add_typer(greppy_app, name="greppy", help="Greppy: Semantic code search CLI")
+app.add_typer(mode_app, name="mode", help="Switch between MCP and Greppy modes")
 
 
 if __name__ == "__main__":
