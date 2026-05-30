@@ -1,13 +1,16 @@
 # Atlas: Hybrid RAG with Specialized MCP Tools
 
-A lightweight RAG system that indexes documents and exposes three specialized search tools via MCP for Claude. Reduces token overhead while improving retrieval accuracy through intelligent tool selection.
+A lightweight RAG system that indexes documents and exposes specialized search tools. Choose between MCP integration for Claude or Greppy CLI for standalone semantic code search.
 
 ## What It Does
 
 - Hybrid retrieval combining BM25 keyword matching and semantic vector search
-- Three specialized MCP tools: search_keyword (fast), search_semantic (accurate), search_hybrid (balanced)
+- **Two ways to search:**
+  - MCP tools for Claude Code integration (three specialized tools: search_keyword, search_semantic, search_hybrid)
+  - Greppy CLI for standalone code search (semantic search, exact matching, file reading, auto-indexing)
 - Local execution with zero network calls
 - Automatic tool discovery in Claude Code
+- File watching for incremental indexing
 - Benchmark-tested performance metrics
 
 ## Architecture
@@ -37,12 +40,29 @@ Documents (yours)
 
 ## Quick Start
 
+### Option 1: Greppy CLI (Standalone)
+
+```bash
+# Install
+pip install -r requirements.txt && pip install -e .
+
+# Index your codebase
+atlas greppy index .
+
+# Search!
+atlas greppy search "authentication logic"
+atlas greppy exact "def process_payment"
+atlas greppy read src/auth.py:45
+```
+
+### Option 2: MCP Tools for Claude Code
+
 ```bash
 # Install
 pip install -r requirements.txt && pip install -e .
 
 # Index documents
-python -m atlas.cli index /path/to/documents
+atlas index
 
 # Start HTTP server (required)
 python http_server.py
@@ -52,6 +72,8 @@ python -m atlas.mcp_server
 
 # Claude will auto-discover the three tools
 ```
+
+See [GREPPY_GUIDE.md](GREPPY_GUIDE.md) for Greppy documentation or continue below for MCP setup.
 
 ## Tools
 
@@ -94,12 +116,13 @@ Server:
 
 ```
 src/atlas/
-├── mcp_server.py       Three MCP tools
+├── mcp_server.py       Three MCP tools (search_keyword, search_semantic, search_hybrid)
+├── greppy.py           Greppy CLI interface (search, exact, read, watch, index, status, clear)
 ├── bm25store.py        BM25 keyword search
 ├── vectorstore.py      Vector embeddings
 ├── embeddings.py       Embedding model loader
 ├── chunker.py          Document chunking
-└── cli.py              Index command
+└── cli.py              Typer app with both MCP and Greppy commands
 
 http_server.py          HTTP server with 3 endpoints
 .claude/
@@ -130,6 +153,7 @@ Use search_hybrid for:
 
 ## Resources
 
+- [GREPPY_GUIDE.md](GREPPY_GUIDE.md) - Complete Greppy CLI documentation and setup
 - BENCHMARK_RESULTS.md - Performance analysis with 5 test queries
 - QUICK_START.md - Step-by-step setup guide
 - LOCAL_MCP_SETUP.md - Detailed configuration

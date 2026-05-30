@@ -18,3 +18,4 @@ psutil
 fastapi
 uvicorn
 httpx
+watchdog

@@ -11,7 +11,14 @@
       "Bash(pip install *)",
       "Bash(Start-Sleep -Seconds 3)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git rm *)",
+      "WebFetch(domain:github.com)",
+      "Bash(dir)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "rag-agent"
+  ]
 }
