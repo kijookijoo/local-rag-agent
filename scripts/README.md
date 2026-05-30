@@ -204,6 +204,30 @@ Claude's responses vary due to:
 
 Run multiple times and average results for stable benchmarks.
 
+## Logging Results
+
+After running an experiment, automatically log results to `BENCHMARK_RESULTS.md`:
+
+```bash
+# After running retrieval evaluation
+python scripts/log_experiment.py --experiment retrieval \
+    --results retrieval_results.json \
+    --summary "Greppy is 2.24ms latency, 75% relevant"
+
+# After running Claude API evaluation
+python scripts/log_experiment.py --experiment claude-api \
+    --results evaluation_results.json \
+    --summary "Greppy is 65% cheaper and 57% faster"
+```
+
+This automatically:
+- Updates BENCHMARK_RESULTS.md with new results
+- Parses JSON results into formatted tables
+- Adds date and status
+- Maintains experiment history
+
+See [BENCHMARK_RESULTS.md](../BENCHMARK_RESULTS.md) for complete experiment history.
+
 ## Extending the Scripts
 
 ### Add Custom Queries
